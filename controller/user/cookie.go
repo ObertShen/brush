@@ -1,8 +1,9 @@
-package middleware
+package user
 
 import (
-	"brush/model"
 	"net/http"
+
+	"brush/model"
 
 	"github.com/ObertShen/gin"
 )

@@ -1,10 +1,10 @@
 package user
 
 import (
-	"brush/core/middleware"
+	"net/http"
+
 	"brush/model"
 	"brush/util"
-	"net/http"
 
 	"github.com/ObertShen/gin"
 )
@@ -46,7 +46,7 @@ func loginEndPoint(ctx *gin.Context) {
 }
 
 func getUserEndPoint(ctx *gin.Context) {
-	userInfo, exist := ctx.Get(middleware.UserInfo)
+	userInfo, exist := ctx.Get(UserInfo)
 	if !exist {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"code": 5001, "error": "no cookie middleware"})
 		return
@@ -60,5 +60,5 @@ func AppendTo(r *gin.RouterGroup) {
 	authorized := r.Group("/users")
 
 	authorized.POST("/login", loginEndPoint)
-	authorized.GET("/me", middleware.CookiesParser(), getUserEndPoint)
+	authorized.GET("/me", CookiesParser(), getUserEndPoint)
 }
