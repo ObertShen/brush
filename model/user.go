@@ -46,7 +46,7 @@ func NewUserData() *UserData {
 // GetList 从 user 中查询纪录
 func (ud *UserData) GetList(user *User) (userList []*User, err error) {
 	userList = []*User{}
-	if err = ud.conn.UseBool("is_deleted", "is_admin").Find(&userList, user); err != nil {
+	if err = ud.conn.UseBool("is_deleted").Find(&userList, user); err != nil {
 		return
 	}
 
@@ -55,7 +55,7 @@ func (ud *UserData) GetList(user *User) (userList []*User, err error) {
 
 // Get 从 user 中查询纪录
 func (ud *UserData) Get(user *User) (bool, error) {
-	return ud.conn.UseBool("is_deleted", "is_admin").Get(user)
+	return ud.conn.UseBool("is_deleted").Get(user)
 }
 
 // Insert 从 project_inspection 中增加纪录

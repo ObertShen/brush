@@ -59,6 +59,8 @@ func getUserEndPoint(ctx *gin.Context) {
 func AppendTo(r *gin.RouterGroup) {
 	authorized := r.Group("/users")
 
+	authorized.GET("/", CookiesParser(), findUserEndPoint)
 	authorized.POST("/login", loginEndPoint)
+	authorized.GET("/relation", getRelationEndPoint)
 	authorized.GET("/me", CookiesParser(), getUserEndPoint)
 }
