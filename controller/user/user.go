@@ -61,6 +61,6 @@ func AppendTo(r *gin.RouterGroup) {
 
 	authorized.GET("/", CookiesParser(), findUserEndPoint)
 	authorized.POST("/login", loginEndPoint)
-	authorized.GET("/relation", getRelationEndPoint)
+	authorized.GET("/relation", CookiesParser(), getRelationEndPoint)
 	authorized.GET("/me", CookiesParser(), getUserEndPoint)
 }

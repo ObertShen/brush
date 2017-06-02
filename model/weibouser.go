@@ -61,3 +61,13 @@ func (wud *WeiboUserData) GetList(record *WeiboUser) (userList []*WeiboUser, err
 func (wud *WeiboUserData) Get(record *WeiboUser) (bool, error) {
 	return wud.conn.UseBool("is_deleted").Get(record)
 }
+
+// GetListByFollower 从 weibo_user 中查询纪录
+func (wud *WeiboUserData) GetListByFollower(weiboID int64) (userList []*WeiboUser, err error) {
+	userList = []*WeiboUser{}
+	if err = wud.conn.UseBool("is_deleted").Join("INNER", "weibo_relation", "weibo_relation.follower_id=weibo_user.id AND weibo_relation.follow_id=?", weiboID).Find(&userList); err != nil {
+		return
+	}
+
+	return
+}

@@ -3,6 +3,15 @@ package user
 import "brush/model"
 
 type (
+	dataAccess struct {
+		user  *model.UserData
+		weibo *model.WeiboUserData
+		zhihu *model.ZhihuUserData
+	}
+	// Service 供controller层调用
+	Service struct {
+		dataAccess *dataAccess
+	}
 	// Zhihu 知乎信息
 	Zhihu struct {
 		model.ZhihuUser

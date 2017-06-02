@@ -35,6 +35,16 @@ func NewWeiboRelationData() *WeiboRelationData {
 	return wrd
 }
 
+// GetList 从 weibo_relation 中查询纪录
+func (wrd *WeiboRelationData) GetList(record *WeiboRelation) (records []*WeiboRelation, err error) {
+	records = []*WeiboRelation{}
+	if err = wrd.conn.UseBool("is_deleted").Find(&records, record); err != nil {
+		return
+	}
+
+	return
+}
+
 // Insert 插入一条数据
 func (wrd *WeiboRelationData) Insert(record *WeiboRelation) (int64, error) {
 	return wrd.conn.Insert(record)

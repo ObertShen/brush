@@ -4,7 +4,7 @@ package model
 type ZhihuUser struct {
 	ID                   int64  `xorm:"BigInt(15) pk autoincr 'id'" json:"id"`
 	ZhihuID              string `xorm:"varchar(128) notnull" json:"zhihuID"`
-	UserName             int64  `xorm:"varchar(128) notnull 'username'" json:"username"`
+	UserName             string `xorm:"varchar(128) notnull 'username'" json:"username"`
 	NickName             string `xorm:"varchar(128) notnull 'nickname'" json:"nickname"`
 	AvatarURL            string `xorm:"varchar(512) notnull" json:"avatarURL"`
 	Gender               int    `xorm:"TinyInt(2) notnull" json:"gender"`
@@ -67,6 +67,16 @@ func (zud *ZhihuUserData) Insert(record *ZhihuUser) (int64, error) {
 func (zud *ZhihuUserData) GetList(record *ZhihuUser) (userList []*ZhihuUser, err error) {
 	userList = []*ZhihuUser{}
 	if err = zud.conn.UseBool("is_deleted").Find(&userList, record); err != nil {
+		return
+	}
+
+	return
+}
+
+// GetListByFollower 从 zhihu_user 中查询纪录
+func (zud *ZhihuUserData) GetListByFollower(zhihuID string) (userList []*ZhihuUser, err error) {
+	userList = []*ZhihuUser{}
+	if err = zud.conn.Join("INNER", "zhihu_relation", "zhihu_relation.followee=zhihu_user.username AND zhihu_relation.follower=?", zhihuID).Find(&userList); err != nil {
 		return
 	}
 

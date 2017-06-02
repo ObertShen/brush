@@ -2,19 +2,7 @@ package user
 
 import "brush/model"
 
-type (
-	dataAccess struct {
-		user  *model.UserData
-		weibo *model.WeiboUserData
-		zhihu *model.ZhihuUserData
-	}
-	// Service 供controller层调用
-	Service struct {
-		dataAccess *dataAccess
-	}
-)
-
-// NewService 创建新
+// NewService 创建Service对象
 func NewService() *Service {
 	return &Service{&dataAccess{model.GetUserDataIns(), model.GetWeiboUserDataIns(), model.GetZhihuUserDataIns()}}
 }
@@ -61,18 +49,60 @@ func (us *Service) GetWeiboUserListByName(nickName string) (weiboUsers []*Weibo,
 	return
 }
 
-// GetZhihuRelations 获取人物关系
-// func (us *Service) GetZhihuRelations(zhihu string) ([]*Node, []*Link, error) {
-// 	userList, err := us.GetList(&model.ZhihuUser{UserName: userName})
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
+// GetZhihuUserByFollower 获取某个知乎用户的关注者信息
+func (us *Service) GetZhihuUserByFollower(zhihuID string) ([]*Node, []*Link, error) {
+	nodes := []*Node{}
+	links := []*Link{}
 
-// 	return nil, nil, nil
-// }
+	zhihuUser := &model.ZhihuUser{UserName: zhihuID}
+	has, err := us.dataAccess.zhihu.Get(zhihuUser)
+	if err != nil {
+		return nil, nil, err
+	}
 
-// GetWeiboRelations 获取人物关系
-func (us *Service) GetWeiboRelations(weiboUserID int64) ([]*Node, []*Link) {
+	if !has {
+		return nodes, links, nil
+	}
 
-	return nil, nil
+	records, err := us.dataAccess.zhihu.GetListByFollower(zhihuID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	nodes = append(nodes, &Node{Name: zhihuUser.NickName, Category: 0, Value: 10, Label: zhihuUser.NickName + "\n(主要)"})
+	for _, record := range records {
+		nodes = append(nodes, &Node{Category: 1, Name: record.NickName, Value: 8})
+		links = append(links, &Link{Source: zhihuUser.NickName, Target: record.NickName, Weight: 5})
+	}
+
+	return nodes, links, nil
+}
+
+// GetWeiboUserByFollower 获取某个微博用户的关注者信息
+func (us *Service) GetWeiboUserByFollower(weiboUserID int64) ([]*Node, []*Link, error) {
+	nodes := []*Node{}
+	links := []*Link{}
+
+	weiboUser := &model.WeiboUser{ID: weiboUserID}
+	has, err := us.dataAccess.weibo.Get(weiboUser)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if !has {
+		return nodes, links, nil
+	}
+
+	records, err := us.dataAccess.weibo.GetListByFollower(weiboUserID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	nodes = append(nodes, &Node{Name: weiboUser.NickName, Category: 0, Value: 10, Label: weiboUser.NickName + "\n(主要)"})
+	for _, record := range records {
+		nodes = append(nodes, &Node{Category: 1, Name: record.NickName, Value: 8})
+		links = append(links, &Link{Source: record.NickName, Target: weiboUser.NickName, Weight: 5})
+	}
+
+	return nodes, links, nil
 }
