@@ -58,11 +58,15 @@ func findUserEndPoint(ctx *gin.Context) {
 
 	result := make([]interface{}, 0)
 	if len(weiboUsers) != 0 {
-		result = append(result, weiboUsers)
+		for _, weiboUser := range weiboUsers {
+			result = append(result, weiboUser)
+		}
 	}
 
 	if len(zhihuUsers) != 0 {
-		result = append(result, zhihuUsers)
+		for _, zhihuUser := range zhihuUsers {
+			result = append(result, zhihuUser)
+		}
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"code": http.StatusOK, "info": result})

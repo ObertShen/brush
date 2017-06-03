@@ -18,7 +18,7 @@ type ZhihuUser struct {
 	FollowingNum         int64  `xorm:"Int(11) notnull" json:"followingNum"`
 	ThanksNum            int64  `xorm:"Int(11) notnull" json:"thanksNum"`
 	AgreeNum             int64  `xorm:"Int(11) notnull" json:"agreeNum"`
-	FavoriteNum          int64  `xorm:"Int(11) notnull" json:"favoriteNum"`
+	FavorateNum          int64  `xorm:"Int(11) notnull" json:"favoriteNum"`
 	FollowingQuestionNum int64  `xorm:"Int(11) notnull" json:"followingQuestionNum"`
 	FollowingTopicNum    int64  `xorm:"Int(11) notnull" json:"followingTopicNum"`
 	ArticleNum           int64  `xorm:"Int(11) notnull" json:"articleNum"`

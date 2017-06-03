@@ -38,6 +38,7 @@ func loginEndPoint(ctx *gin.Context) {
 		3600,
 		"/bigdata",
 		"localhost",
+		// .lpxiang.com
 		false,
 		true,
 	)
