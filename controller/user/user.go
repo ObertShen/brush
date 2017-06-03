@@ -57,6 +57,7 @@ func getUserEndPoint(ctx *gin.Context) {
 
 // AppendTo 加载 user 模块的路由
 func AppendTo(r *gin.RouterGroup) {
+	r.GET("/home/info", CookiesParser(), getZhihuAndWeiboUsers)
 	authorized := r.Group("/users")
 
 	authorized.GET("/", CookiesParser(), findUserEndPoint)
