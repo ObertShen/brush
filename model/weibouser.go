@@ -3,8 +3,8 @@ package model
 // WeiboUser 与数据库中的 weibo_user 表相对应 用于存储项目的巡查信息
 type WeiboUser struct {
 	ID           int64  `xorm:"BigInt(15) pk autoincr 'id'" json:"id"`
-	FollowNumber int64  `xorm:"Int(11) notnull" json:"followings"`
-	FansNumber   int64  `xorm:"Int(11) notnull" json:"followers"`
+	FollowNumber int64  `xorm:"Int(11) notnull" json:"followerNum"`
+	FansNumber   int64  `xorm:"Int(11) notnull" json:"followingNum"`
 	WeiboNumber  int64  `xorm:"notnull" json:"-"`
 	NickName     string `xorm:"varchar(128) notnull" json:"username"`
 	Region       string `xorm:"varchar(128) notnull" json:"region"`
@@ -48,9 +48,17 @@ func (wud *WeiboUserData) Insert(record *WeiboUser) (int64, error) {
 }
 
 // GetList 从 weibo_user 中查询纪录
-func (wud *WeiboUserData) GetList(record *WeiboUser) (userList []*WeiboUser, err error) {
+func (wud *WeiboUserData) GetList(record *WeiboUser, pageSize, pageNo int) (userList []*WeiboUser, err error) {
+	if pageNo < 1 {
+		pageNo = 1
+	}
+
+	if pageSize < 10 {
+		pageSize = 10
+	}
+
 	userList = []*WeiboUser{}
-	if err = wud.conn.UseBool("is_deleted").Find(&userList, record); err != nil {
+	if err = wud.conn.UseBool("is_deleted").Limit(pageSize, pageSize*(pageNo-1)).Find(&userList, record); err != nil {
 		return
 	}
 

@@ -3,6 +3,7 @@ package user
 import (
 	"net/http"
 
+	"brush/model"
 	"brush/service/user"
 
 	"github.com/ObertShen/gin"
@@ -14,13 +15,13 @@ func findUserEndPoint(ctx *gin.Context) {
 		return
 	}
 
-	weiboUsers, err := user.GetServiceIns().GetWeiboUserListByName(ctx.Query("key"))
+	weiboUsers, err := user.GetServiceIns().GetWeiboUsers(model.WeiboUser{NickName: ctx.Query("key")}, 10, 0)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"code": 5000, "error": err})
 		return
 	}
 
-	zhihuUsers, err := user.GetServiceIns().GetZhihuUserListByName(ctx.Query("key"))
+	zhihuUsers, err := user.GetServiceIns().GetZhihuUsers(model.ZhihuUser{NickName: ctx.Query("key")}, 10, 0)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"code": 5000, "error": err})
 		return

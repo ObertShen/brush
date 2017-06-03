@@ -13,7 +13,8 @@ func TestWeiboUser(t *testing.T) {
 
 	assert.NotPanics(t, func() { WeiboUserDataIns = NewWeiboUserData() })
 
-	userList, err := WeiboUserDataIns.GetListByFollower(1195242865)
+	// userList, err := WeiboUserDataIns.GetListByFollower(1195242865)
+	userList, err := WeiboUserDataIns.GetList(&WeiboUser{}, 4, 10)
 	if assert.NoError(t, err) {
 		assert.NotZero(t, len(userList))
 	}

@@ -19,24 +19,9 @@ func GetServiceIns() *Service {
 	return ServiceIns
 }
 
-// GetZhihuUserListByName 根据用户名获取知乎用户
-func (us *Service) GetZhihuUserListByName(nickName string) (zhihuUsers []*Zhihu, err error) {
-	records, err := us.dataAccess.zhihu.GetList(&model.ZhihuUser{NickName: nickName})
-	if err != nil {
-		return nil, err
-	}
-
-	zhihuUsers = []*Zhihu{}
-	for _, record := range records {
-		zhihuUsers = append(zhihuUsers, &Zhihu{*record, "zhihu"})
-	}
-
-	return
-}
-
-// GetWeiboUserListByName 根据用户名获取微博用户
-func (us *Service) GetWeiboUserListByName(nickName string) (weiboUsers []*Weibo, err error) {
-	records, err := us.dataAccess.weibo.GetList(&model.WeiboUser{NickName: nickName})
+// GetWeiboUsers 获取指定条数的用户记录
+func (us *Service) GetWeiboUsers(weiboUser model.WeiboUser, pageSize, pageNo int) (weiboUsers []*Weibo, err error) {
+	records, err := us.dataAccess.weibo.GetList(&weiboUser, pageSize, pageNo)
 	if err != nil {
 		return nil, err
 	}
@@ -44,6 +29,21 @@ func (us *Service) GetWeiboUserListByName(nickName string) (weiboUsers []*Weibo,
 	weiboUsers = []*Weibo{}
 	for _, record := range records {
 		weiboUsers = append(weiboUsers, &Weibo{*record, "weibo"})
+	}
+
+	return
+}
+
+// GetZhihuUsers 根据用户名获取知乎用户
+func (us *Service) GetZhihuUsers(zhihuUser model.ZhihuUser, pageSize, pageNo int) (zhihuUsers []*Zhihu, err error) {
+	records, err := us.dataAccess.zhihu.GetList(&zhihuUser, pageSize, pageNo)
+	if err != nil {
+		return nil, err
+	}
+
+	zhihuUsers = []*Zhihu{}
+	for _, record := range records {
+		zhihuUsers = append(zhihuUsers, &Zhihu{*record, "zhihu"})
 	}
 
 	return

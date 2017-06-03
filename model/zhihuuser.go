@@ -64,9 +64,17 @@ func (zud *ZhihuUserData) Insert(record *ZhihuUser) (int64, error) {
 }
 
 // GetList 从 zhihu_user 中查询纪录
-func (zud *ZhihuUserData) GetList(record *ZhihuUser) (userList []*ZhihuUser, err error) {
+func (zud *ZhihuUserData) GetList(record *ZhihuUser, pageSize, pageNo int) (userList []*ZhihuUser, err error) {
+	if pageNo < 1 {
+		pageNo = 1
+	}
+
+	if pageSize < 10 {
+		pageSize = 10
+	}
+
 	userList = []*ZhihuUser{}
-	if err = zud.conn.UseBool("is_deleted").Find(&userList, record); err != nil {
+	if err = zud.conn.UseBool("is_deleted").Limit(pageSize, pageSize*(pageNo-1)).Find(&userList, record); err != nil {
 		return
 	}
 
