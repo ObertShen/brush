@@ -3,10 +3,7 @@ package middleware
 import (
 	"fmt"
 	"io"
-	"strconv"
 	"time"
-
-	"muse/utils"
 
 	"github.com/ObertShen/gin"
 )
@@ -75,9 +72,7 @@ func LoggerWithWriter(out io.Writer, notlogged ...string) gin.HandlerFunc {
 			statusColor := colorForStatus(statusCode)
 			methodColor := colorForMethod(method)
 			comment := c.Errors.ByType(gin.ErrorTypePrivate).String()
-			if statusCode == 500 || statusCode >= 500 {
-				go utils.SendEmailByOPS("Muse Error: "+strconv.Itoa(statusCode), method+" "+path)
-			}
+
 			fmt.Fprintf(out, "[GIN] %v | %s |%s %3d %s| %13v | %s |%s  %s %-7s %s\n%s",
 				end.Format("2006/01/02 - 15:04:05"),
 				c.Writer.Header().Get("id"),

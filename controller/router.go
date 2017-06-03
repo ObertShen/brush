@@ -10,7 +10,8 @@ import (
 // Mount 加载所有模块对应的路由和请求处理
 func Mount() (r *gin.Engine) {
 	r = gin.New()
-	r.Use(gin.Recovery(), middleware.Logger(), middleware.CORSHandler(), middleware.AuthRequired())
+	// middleware.AuthRequired()
+	r.Use(gin.Recovery(), middleware.Logger(), middleware.CORSHandler())
 
 	mainRouter := r.Group("/bigdata")
 	user.AppendTo(mainRouter)

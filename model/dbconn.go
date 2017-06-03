@@ -18,7 +18,7 @@ type DBConn struct {
 	conn *xorm.Engine
 }
 
-// GetConnIns 用于获取 MuseData类的单例
+// GetConnIns 用于获取 DBConn 类的单例
 func GetConnIns() *DBConn {
 	if connIns == nil {
 		connIns = &DBConn{db.GetInstance().Conn}

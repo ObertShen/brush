@@ -3,8 +3,6 @@ package middleware
 import (
 	"net/http"
 
-	util "muse/core/utils/http"
-
 	"github.com/ObertShen/gin"
 )
 
@@ -15,7 +13,10 @@ func CORSHandler() gin.HandlerFunc {
 func checkMethod() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.Request.Method == "OPTIONS" {
-			util.SetOPTIONHeader(c.Writer)
+			c.Header("Access-Control-Allow-Origin", "*")
+			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			c.Header("Access-Control-Allow-Headers", "Content-Type")
+			c.Header("Access-Control-Allow-Headers", "Authorization")
 			c.AbortWithStatus(http.StatusOK)
 		}
 	}
