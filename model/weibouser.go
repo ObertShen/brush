@@ -47,6 +47,20 @@ func (wud *WeiboUserData) Insert(record *WeiboUser) (int64, error) {
 	return wud.conn.Insert(record)
 }
 
+// GetByNickName 根据 nickname进行模糊查询
+func (wud *WeiboUserData) GetByNickName(nickName string) (userList []*WeiboUser, err error) {
+	userList = []*WeiboUser{}
+	if nickName == "" {
+		return
+	}
+
+	if err = wud.conn.UseBool("is_deleted").Where("nick_name like ?", "%"+nickName+"%").Find(&userList); err != nil {
+		return
+	}
+
+	return
+}
+
 // GetList 从 weibo_user 中查询纪录
 func (wud *WeiboUserData) GetList(record *WeiboUser, pageSize, pageNo int) (userList []*WeiboUser, err error) {
 	if pageNo < 1 {

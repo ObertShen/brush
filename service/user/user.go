@@ -2,9 +2,23 @@ package user
 
 import "brush/model"
 
+type (
+	dataAccess struct {
+		user  *model.UserData
+		weibo *model.WeiboUserData
+		zhihu *model.ZhihuUserData
+		tag   *model.UserTagData
+	}
+
+	// Service 供controller层调用
+	Service struct {
+		dataAccess *dataAccess
+	}
+)
+
 // NewService 创建Service对象
 func NewService() *Service {
-	return &Service{&dataAccess{model.GetUserDataIns(), model.GetWeiboUserDataIns(), model.GetZhihuUserDataIns()}}
+	return &Service{&dataAccess{model.GetUserDataIns(), model.GetWeiboUserDataIns(), model.GetZhihuUserDataIns(), model.GetUserTagDataIns()}}
 }
 
 // ServiceIns Service的单例
@@ -19,19 +33,61 @@ func GetServiceIns() *Service {
 	return ServiceIns
 }
 
+// GetWeiboUsersByKeyWord 获取指定条数的用户记录
+func (us *Service) GetWeiboUsersByKeyWord(nickName string) ([]*Weibo, error) {
+	records, err := us.dataAccess.weibo.GetByNickName(nickName)
+	if err != nil {
+		return nil, err
+	}
+
+	return us.getWeiboUsers(records)
+}
+
 // GetWeiboUsers 获取指定条数的用户记录
-func (us *Service) GetWeiboUsers(weiboUser model.WeiboUser, pageSize, pageNo int) (weiboUsers []*Weibo, err error) {
+func (us *Service) GetWeiboUsers(weiboUser model.WeiboUser, pageSize, pageNo int) ([]*Weibo, error) {
 	records, err := us.dataAccess.weibo.GetList(&weiboUser, pageSize, pageNo)
 	if err != nil {
 		return nil, err
 	}
 
+	return us.getWeiboUsers(records)
+}
+
+func (us *Service) getWeiboUsers(records []*model.WeiboUser) (weiboUsers []*Weibo, err error) {
 	weiboUsers = []*Weibo{}
 	for _, record := range records {
 		weiboUsers = append(weiboUsers, &Weibo{*record, "weibo"})
 	}
 
 	return
+}
+
+// GetZhihuUsersByKeyWord 获取指定条数的用户记录
+func (us *Service) GetZhihuUsersByKeyWord(keyWord string) ([]*Zhihu, error) {
+	records, err := us.dataAccess.zhihu.GetByNickName(keyWord)
+	if err != nil {
+		return nil, err
+	}
+
+	recordsByUserName, err := us.dataAccess.zhihu.GetByUserName(keyWord)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, recordByUserName := range recordsByUserName {
+		notIn := false
+		for _, record := range records {
+			if recordByUserName.ID == record.ID {
+				notIn = true
+			}
+		}
+
+		if !notIn {
+			records = append(records, recordByUserName)
+		}
+	}
+
+	return us.getZhihuUsers(records)
 }
 
 // GetZhihuUsers 根据用户名获取知乎用户
@@ -41,6 +97,10 @@ func (us *Service) GetZhihuUsers(zhihuUser model.ZhihuUser, pageSize, pageNo int
 		return nil, err
 	}
 
+	return us.getZhihuUsers(records)
+}
+
+func (us *Service) getZhihuUsers(records []*model.ZhihuUser) (zhihuUsers []*Zhihu, err error) {
 	zhihuUsers = []*Zhihu{}
 	for _, record := range records {
 		zhihuUsers = append(zhihuUsers, &Zhihu{*record, "zhihu"})

@@ -37,8 +37,8 @@ func loginEndPoint(ctx *gin.Context) {
 		userData.UnionID,
 		3600,
 		"/bigdata",
-		"localhost",
-		// .lpxiang.com
+		// "localhost",
+		"localhost.lpxiang.com",
 		false,
 		true,
 	)
@@ -65,4 +65,5 @@ func AppendTo(r *gin.RouterGroup) {
 	authorized.POST("/login", loginEndPoint)
 	authorized.GET("/relation", CookiesParser(), getRelationEndPoint)
 	authorized.GET("/me", CookiesParser(), getUserEndPoint)
+	authorized.GET("/tags", CookiesParser(), getUserTagEndPoint)
 }

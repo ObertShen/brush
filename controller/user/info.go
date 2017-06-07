@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 
 	"brush/model"
@@ -15,9 +14,6 @@ import (
 func getZhihuAndWeiboUsers(ctx *gin.Context) {
 	pageSize, _ := strconv.Atoi(ctx.Query("pageSize"))
 	pageNo, _ := strconv.Atoi(ctx.Query("pageNo"))
-
-	fmt.Println(pageSize)
-	fmt.Println(pageNo)
 
 	if ctx.Query("platform") == "zhihu" {
 		zhihuUsers, err := user.GetServiceIns().GetZhihuUsers(model.ZhihuUser{}, pageSize, pageNo)
@@ -44,13 +40,13 @@ func findUserEndPoint(ctx *gin.Context) {
 		return
 	}
 
-	weiboUsers, err := user.GetServiceIns().GetWeiboUsers(model.WeiboUser{NickName: ctx.Query("key")}, 10, 0)
+	weiboUsers, err := user.GetServiceIns().GetWeiboUsersByKeyWord(ctx.Query("key"))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"code": 5000, "error": err})
 		return
 	}
 
-	zhihuUsers, err := user.GetServiceIns().GetZhihuUsers(model.ZhihuUser{NickName: ctx.Query("key")}, 10, 0)
+	zhihuUsers, err := user.GetServiceIns().GetZhihuUsersByKeyWord(ctx.Query("key"))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"code": 5000, "error": err})
 		return

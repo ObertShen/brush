@@ -63,6 +63,34 @@ func (zud *ZhihuUserData) Insert(record *ZhihuUser) (int64, error) {
 	return zud.conn.Insert(record)
 }
 
+// GetByNickName 根据 nickname进行模糊查询
+func (zud *ZhihuUserData) GetByNickName(nickName string) (userList []*ZhihuUser, err error) {
+	userList = []*ZhihuUser{}
+	if nickName == "" {
+		return
+	}
+
+	if err = zud.conn.UseBool("is_deleted").Where("nickname like ?", "%"+nickName+"%").Find(&userList); err != nil {
+		return
+	}
+
+	return
+}
+
+// GetByUserName 根据 username进行模糊查询
+func (zud *ZhihuUserData) GetByUserName(userName string) (userList []*ZhihuUser, err error) {
+	userList = []*ZhihuUser{}
+	if userName == "" {
+		return
+	}
+
+	if err = zud.conn.UseBool("is_deleted").Where("username like ?", "%"+userName+"%").Find(&userList); err != nil {
+		return
+	}
+
+	return
+}
+
 // GetList 从 zhihu_user 中查询纪录
 func (zud *ZhihuUserData) GetList(record *ZhihuUser, pageSize, pageNo int) (userList []*ZhihuUser, err error) {
 	if pageNo < 1 {
