@@ -37,8 +37,8 @@ func loginEndPoint(ctx *gin.Context) {
 		userData.UnionID,
 		3600,
 		"/bigdata",
-		// "localhost",
-		"localhost.lpxiang.com",
+		"localhost",
+		// "local.lpxiang.com",
 		false,
 		true,
 	)

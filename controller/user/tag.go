@@ -24,7 +24,7 @@ func getUserTagEndPoint(ctx *gin.Context) {
 		}
 
 		if userTag == nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusOK, "info": []string{}})
+			ctx.JSON(http.StatusOK, gin.H{"code": http.StatusOK, "info": []string{}})
 			return
 		}
 
@@ -37,7 +37,7 @@ func getUserTagEndPoint(ctx *gin.Context) {
 		}
 
 		if userTag == nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"code": http.StatusOK, "info": []string{}})
+			ctx.JSON(http.StatusOK, gin.H{"code": http.StatusOK, "info": []string{}})
 			return
 		}
 
