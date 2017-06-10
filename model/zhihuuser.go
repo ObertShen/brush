@@ -9,11 +9,11 @@ type ZhihuUser struct {
 	AvatarURL            string `xorm:"varchar(512) notnull" json:"avatarURL"`
 	Gender               int    `xorm:"TinyInt(2) notnull" json:"gender"`
 	City                 string `xorm:"varchar(32) notnull" json:"city"`
-	HeadLine             string `xorm:"varchar(512) notnull" json:"headLine"`
+	HeadLine             string `xorm:"varchar(512) notnull" json:"headline"`
 	Industry             string `xorm:"varchar(32) notnull" json:"industry"`
 	Company              string `xorm:"varchar(128) notnull" json:"company"`
 	School               string `xorm:"varchar(64) notnull" json:"school"`
-	Major                string `xorm:"varchar(64) notnull" json:"school"`
+	Major                string `xorm:"varchar(64) notnull" json:"major"`
 	FollowerNum          int64  `xorm:"Int(11) notnull" json:"followerNum"`
 	FollowingNum         int64  `xorm:"Int(11) notnull" json:"followingNum"`
 	ThanksNum            int64  `xorm:"Int(11) notnull" json:"thanksNum"`
@@ -64,13 +64,21 @@ func (zud *ZhihuUserData) Insert(record *ZhihuUser) (int64, error) {
 }
 
 // GetByNickName 根据 nickname进行模糊查询
-func (zud *ZhihuUserData) GetByNickName(nickName string) (userList []*ZhihuUser, err error) {
+func (zud *ZhihuUserData) GetByNickName(nickName string, pageSize, pageNo int) (userList []*ZhihuUser, err error) {
 	userList = []*ZhihuUser{}
 	if nickName == "" {
 		return
 	}
 
-	if err = zud.conn.UseBool("is_deleted").Where("nickname like ?", "%"+nickName+"%").Find(&userList); err != nil {
+	if pageNo < 1 {
+		pageNo = 1
+	}
+
+	if pageSize < 50 {
+		pageSize = 50
+	}
+
+	if err = zud.conn.UseBool("is_deleted").Where("nickname like ?", nickName+"%").Limit(pageSize, pageSize*(pageNo-1)).Find(&userList); err != nil {
 		return
 	}
 
@@ -78,13 +86,21 @@ func (zud *ZhihuUserData) GetByNickName(nickName string) (userList []*ZhihuUser,
 }
 
 // GetByUserName 根据 username进行模糊查询
-func (zud *ZhihuUserData) GetByUserName(userName string) (userList []*ZhihuUser, err error) {
+func (zud *ZhihuUserData) GetByUserName(userName string, pageSize, pageNo int) (userList []*ZhihuUser, err error) {
 	userList = []*ZhihuUser{}
 	if userName == "" {
 		return
 	}
 
-	if err = zud.conn.UseBool("is_deleted").Where("username like ?", "%"+userName+"%").Find(&userList); err != nil {
+	if pageNo < 1 {
+		pageNo = 1
+	}
+
+	if pageSize < 50 {
+		pageSize = 50
+	}
+
+	if err = zud.conn.UseBool("is_deleted").Where("username like ?", userName+"%").Limit(pageSize, pageSize*(pageNo-1)).Find(&userList); err != nil {
 		return
 	}
 
@@ -93,14 +109,6 @@ func (zud *ZhihuUserData) GetByUserName(userName string) (userList []*ZhihuUser,
 
 // GetList 从 zhihu_user 中查询纪录
 func (zud *ZhihuUserData) GetList(record *ZhihuUser, pageSize, pageNo int) (userList []*ZhihuUser, err error) {
-	if pageNo < 1 {
-		pageNo = 1
-	}
-
-	if pageSize < 10 {
-		pageSize = 10
-	}
-
 	userList = []*ZhihuUser{}
 	if err = zud.conn.UseBool("is_deleted").Limit(pageSize, pageSize*(pageNo-1)).Find(&userList, record); err != nil {
 		return

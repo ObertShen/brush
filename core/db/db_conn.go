@@ -49,7 +49,7 @@ func (dm *Manager) CloseConnect() {
 
 // OpenConnect 生成ORM引擎，建立数据库连接
 func (dm *Manager) OpenConnect() {
-	engine, err := xorm.NewEngine("mysql", config.GetConfig().GetValue("DBURL"))
+	engine, err := xorm.NewEngine("mysql", config.GetConfig().GetValue("DefaultDBURL"))
 	if err != nil {
 		log.Printf("[%d]DB Open Failed : %s \n", dm.DebugIndex, "mysql")
 		log.Fatal(err)

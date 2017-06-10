@@ -48,13 +48,13 @@ func (wud *WeiboUserData) Insert(record *WeiboUser) (int64, error) {
 }
 
 // GetByNickName 根据 nickname进行模糊查询
-func (wud *WeiboUserData) GetByNickName(nickName string) (userList []*WeiboUser, err error) {
+func (wud *WeiboUserData) GetByNickName(nickName string, pageSize, pageNo int) (userList []*WeiboUser, err error) {
 	userList = []*WeiboUser{}
 	if nickName == "" {
 		return
 	}
 
-	if err = wud.conn.UseBool("is_deleted").Where("nick_name like ?", "%"+nickName+"%").Find(&userList); err != nil {
+	if err = wud.conn.UseBool("is_deleted").Where("nick_name like ?", "%"+nickName+"%").Limit(pageSize, pageSize*(pageNo-1)).Find(&userList); err != nil {
 		return
 	}
 

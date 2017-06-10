@@ -34,8 +34,8 @@ func GetServiceIns() *Service {
 }
 
 // GetWeiboUsersByKeyWord 获取指定条数的用户记录
-func (us *Service) GetWeiboUsersByKeyWord(nickName string) ([]*Weibo, error) {
-	records, err := us.dataAccess.weibo.GetByNickName(nickName)
+func (us *Service) GetWeiboUsersByKeyWord(nickName string, pageSize, pageNo int) ([]*Weibo, error) {
+	records, err := us.dataAccess.weibo.GetByNickName(nickName, pageSize, pageNo)
 	if err != nil {
 		return nil, err
 	}
@@ -62,14 +62,14 @@ func (us *Service) getWeiboUsers(records []*model.WeiboUser) (weiboUsers []*Weib
 	return
 }
 
-// GetZhihuUsersByKeyWord 获取指定条数的用户记录
-func (us *Service) GetZhihuUsersByKeyWord(keyWord string) ([]*Zhihu, error) {
-	records, err := us.dataAccess.zhihu.GetByNickName(keyWord)
+// GetZhihuUsersByKeyWord 根据关键字获取指定条数的用户记录
+func (us *Service) GetZhihuUsersByKeyWord(keyWord string, pageSize, pageNo int) ([]*Zhihu, error) {
+	records, err := us.dataAccess.zhihu.GetByNickName(keyWord, pageSize, pageNo)
 	if err != nil {
 		return nil, err
 	}
 
-	recordsByUserName, err := us.dataAccess.zhihu.GetByUserName(keyWord)
+	recordsByUserName, err := us.dataAccess.zhihu.GetByUserName(keyWord, pageSize, pageNo)
 	if err != nil {
 		return nil, err
 	}

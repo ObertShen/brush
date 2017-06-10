@@ -35,18 +35,21 @@ func getZhihuAndWeiboUsers(ctx *gin.Context) {
 }
 
 func findUserEndPoint(ctx *gin.Context) {
+	pageSize, _ := strconv.Atoi(ctx.Query("pageSize"))
+	pageNo, _ := strconv.Atoi(ctx.Query("pageNo"))
+
 	if ctx.Query("key") == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"code": 4001, "error": "no parameters"})
 		return
 	}
 
-	weiboUsers, err := user.GetServiceIns().GetWeiboUsersByKeyWord(ctx.Query("key"))
+	weiboUsers, err := user.GetServiceIns().GetWeiboUsersByKeyWord(ctx.Query("key"), pageSize, pageNo)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"code": 5000, "error": err})
 		return
 	}
 
-	zhihuUsers, err := user.GetServiceIns().GetZhihuUsersByKeyWord(ctx.Query("key"))
+	zhihuUsers, err := user.GetServiceIns().GetZhihuUsersByKeyWord(ctx.Query("key"), pageSize, pageNo)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"code": 5000, "error": err})
 		return
