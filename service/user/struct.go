@@ -15,6 +15,8 @@ type (
 	}
 	// Node 构造关系图节点
 	Node struct {
+		ID       int64  `json:"-"`
+		ZhihuID  string `json:"-"`
 		Category int    `json:"category"`
 		Name     string `json:"name"`
 		Value    int    `json:"value"`

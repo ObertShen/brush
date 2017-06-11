@@ -1,6 +1,7 @@
 package user
 
 import "brush/model"
+import "fmt"
 
 type (
 	dataAccess struct {
@@ -129,10 +130,18 @@ func (us *Service) GetZhihuUserByFollower(zhihuID string) ([]*Node, []*Link, err
 		return nil, nil, err
 	}
 
-	nodes = append(nodes, &Node{Name: zhihuUser.NickName, Category: 0, Value: 10, Label: zhihuUser.NickName + "\n(主要)"})
-	for _, record := range records {
-		nodes = append(nodes, &Node{Category: 1, Name: record.NickName, Value: 8})
-		links = append(links, &Link{Source: zhihuUser.NickName, Target: record.NickName, Weight: 5})
+	nodes = append(nodes, &Node{ID: zhihuUser.ID, ZhihuID: zhihuUser.UserName, Name: zhihuUser.NickName, Category: 0, Value: 10, Label: zhihuUser.NickName + "\n(主要)"})
+	for i, record := range records {
+		if i >= 10 {
+			return nodes, links, nil
+		}
+
+		nodes = append(nodes, &Node{ID: record.ID, ZhihuID: record.UserName, Category: 1, Name: record.NickName, Value: 9})
+		links = append(links, &Link{Source: zhihuUser.NickName, Target: record.NickName, Weight: 9})
+		nodes, links, err = us.getZhihuRelationCircle(nodes[0], nodes[i+1], nodes, links, 2)
+		if err != nil {
+			return nil, nil, err
+		}
 	}
 
 	return nodes, links, nil
@@ -158,10 +167,101 @@ func (us *Service) GetWeiboUserByFollower(weiboUserID int64) ([]*Node, []*Link, 
 		return nil, nil, err
 	}
 
-	nodes = append(nodes, &Node{Name: weiboUser.NickName, Category: 0, Value: 10, Label: weiboUser.NickName + "\n(主要)"})
-	for _, record := range records {
-		nodes = append(nodes, &Node{Category: 1, Name: record.NickName, Value: 8})
-		links = append(links, &Link{Source: record.NickName, Target: weiboUser.NickName, Weight: 5})
+	nodes = append(nodes, &Node{ID: weiboUser.ID, Name: weiboUser.NickName, Category: 0, Value: 10, Label: weiboUser.NickName + "\n(主要)"})
+	for i, record := range records {
+		if i >= 10 {
+			return nodes, links, nil
+		}
+
+		nodes = append(nodes, &Node{ID: record.ID, Category: 1, Name: record.NickName, Value: 9})
+		links = append(links, &Link{Source: record.NickName, Target: weiboUser.NickName, Weight: 9})
+		nodes, links, err = us.getRelationCircle(nodes[0], nodes[i+1], nodes, links, 2)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
+	return nodes, links, nil
+}
+
+func (us *Service) getRelationCircle(mainNode *Node, sourceNode *Node, nodes []*Node, links []*Link, times int) ([]*Node, []*Link, error) {
+	records, err := us.dataAccess.weibo.GetListByFollower(sourceNode.ID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	times--
+
+OutLoop:
+	for i, record := range records {
+		fmt.Printf("Times: %d, Record %d \n", times, i)
+		if i >= 10 {
+			return nodes, links, nil
+		}
+
+		if record.ID == mainNode.ID {
+			sourceNode.Category = 3
+			continue OutLoop
+		}
+
+		for _, node := range nodes {
+			if record.ID == node.ID {
+				links = append(links, &Link{Source: record.NickName, Target: sourceNode.Name, Weight: (times + 1) * 3})
+				continue OutLoop
+			}
+		}
+
+		recordNode := &Node{ID: record.ID, Category: 1, Name: record.NickName, Value: (times + 1) * 3}
+		nodes = append(nodes, recordNode)
+		links = append(links, &Link{Source: record.NickName, Target: sourceNode.Name, Weight: (times + 1) * 3})
+
+		if times > 0 {
+			nodes, links, err = us.getRelationCircle(sourceNode, recordNode, nodes, links, times)
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+	}
+
+	return nodes, links, nil
+}
+
+func (us *Service) getZhihuRelationCircle(mainNode *Node, sourceNode *Node, nodes []*Node, links []*Link, times int) ([]*Node, []*Link, error) {
+	records, err := us.dataAccess.zhihu.GetListByFollower(sourceNode.ZhihuID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	times--
+
+OutLoop:
+	for i, record := range records {
+		if i >= 10 {
+			return nodes, links, nil
+		}
+
+		if record.ID == mainNode.ID {
+			sourceNode.Category = 3
+			continue OutLoop
+		}
+
+		for _, node := range nodes {
+			if record.ID == node.ID {
+				links = append(links, &Link{Source: record.NickName, Target: sourceNode.Name, Weight: (times + 1) * 3})
+				continue OutLoop
+			}
+		}
+
+		recordNode := &Node{ID: record.ID, Category: 1, Name: record.NickName, Value: (times + 1) * 3}
+		nodes = append(nodes, recordNode)
+		links = append(links, &Link{Source: record.NickName, Target: sourceNode.Name, Weight: (times + 1) * 3})
+
+		if times >= 0 {
+			nodes, links, err = us.getRelationCircle(sourceNode, recordNode, nodes, links, times)
+			if err != nil {
+				return nil, nil, err
+			}
+		}
 	}
 
 	return nodes, links, nil
