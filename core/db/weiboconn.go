@@ -12,35 +12,24 @@ import (
 	"github.com/go-xorm/xorm"
 )
 
-var (
-	dbDebug = 0
-)
-
 const (
 	maxIdleConns = 8
 	maxOpenConns = 300
 )
 
-// Manager 数据库对象
-type Manager struct {
-	Conn       *xorm.Engine
-	DebugIndex int
+// WeiboManager 数据库对象
+type WeiboManager struct {
+	Conn *xorm.Engine
 }
 
-// NewManager 初始化数据库对象 提供xorm的方法
-func NewManager() *Manager {
-	mgr := new(Manager)
-	mgr.DebugIndex = dbDebug
-	dbDebug++
-	if dbDebug >= 32768 {
-		dbDebug = 0
-	}
-
+// NewWeiboManager 初始化数据库对象 提供xorm的方法
+func NewWeiboManager() *WeiboManager {
+	mgr := new(WeiboManager)
 	return mgr
 }
 
-// CloseConnect 关闭ORM引擎 一般不用手动关闭 程序退出时自动关闭
-func (dm *Manager) CloseConnect() {
+// CloseConnect 关闭连接池 一般不用手动关闭 程序退出时自动关闭
+func (dm *WeiboManager) CloseConnect() {
 	if err := dm.Conn.Close(); err != nil {
 		log.Fatal(err)
 	}
@@ -48,10 +37,10 @@ func (dm *Manager) CloseConnect() {
 }
 
 // OpenConnect 生成ORM引擎，建立数据库连接
-func (dm *Manager) OpenConnect() {
+func (dm *WeiboManager) OpenConnect() {
 	engine, err := xorm.NewEngine("mysql", config.GetConfig().GetValue("DefaultDBURL"))
 	if err != nil {
-		log.Printf("[%d]DB Open Failed : %s \n", dm.DebugIndex, "mysql")
+		log.Printf("DB Open Failed : %s \n", "mysql_weibo")
 		log.Fatal(err)
 	}
 

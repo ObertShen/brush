@@ -53,7 +53,7 @@ func GetZhihuUserDataIns() *ZhihuUserData {
 
 // NewZhihuUserData init ZhihuUserData class
 func NewZhihuUserData() *ZhihuUserData {
-	zud := &ZhihuUserData{GetConnIns()}
+	zud := &ZhihuUserData{GetZhihuConnIns()}
 	zud.conn.Sync2(new(ZhihuUser))
 	return zud
 }

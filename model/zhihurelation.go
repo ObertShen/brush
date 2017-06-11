@@ -30,7 +30,7 @@ func GetZhihuRelationDataIns() *ZhihuRelationData {
 
 // NewZhihuRelationData init ZhihuRelationData class
 func NewZhihuRelationData() *ZhihuRelationData {
-	zrd := &ZhihuRelationData{GetConnIns()}
+	zrd := &ZhihuRelationData{GetZhihuConnIns()}
 	zrd.conn.Sync2(new(ZhihuRelation))
 	return zrd
 }

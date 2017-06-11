@@ -11,7 +11,7 @@ import (
 )
 
 func TestUser(t *testing.T) {
-	db.GetInstance().OpenConnect()
+	db.GetDefaultInstance().OpenConnect()
 
 	assert := assert.New(t)
 	assert.NotPanics(func() { UserDataIns = NewUserData() })

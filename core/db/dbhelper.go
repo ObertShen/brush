@@ -1,12 +1,48 @@
 package db
 
-// Manager 类的单例
-var dbInstance *Manager
+import (
+	"sync"
+)
 
-// GetInstance 获取数据库对象的单例
-func GetInstance() *Manager {
-	if dbInstance == nil {
-		dbInstance = NewManager()
+// ZhihuManager 类的单例
+var (
+	zhihuInstance struct {
+		*ZhihuManager
+		sync.Mutex
 	}
-	return dbInstance
+
+	weiboInstance struct {
+		*WeiboManager
+		sync.Mutex
+	}
+)
+
+// GetZhihuInstance 获取数据库对象的单例
+func GetZhihuInstance() *ZhihuManager {
+	if zhihuInstance.ZhihuManager == nil {
+		zhihuInstance.Lock()
+
+		if zhihuInstance.ZhihuManager == nil {
+			zhihuInstance.ZhihuManager = NewZhihuManager()
+		}
+
+		zhihuInstance.Unlock()
+	}
+
+	return zhihuInstance.ZhihuManager
+}
+
+// GetDefaultInstance 获取数据库对象的单例
+func GetDefaultInstance() *WeiboManager {
+	if weiboInstance.WeiboManager == nil {
+		weiboInstance.Lock()
+
+		if weiboInstance.WeiboManager == nil {
+			weiboInstance.WeiboManager = NewWeiboManager()
+		}
+
+		weiboInstance.Unlock()
+	}
+
+	return weiboInstance.WeiboManager
 }

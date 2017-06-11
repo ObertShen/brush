@@ -10,7 +10,7 @@ import (
 )
 
 func TestZhihuUser(t *testing.T) {
-	db.GetInstance().OpenConnect()
+	db.GetZhihuInstance().OpenConnect()
 
 	assert.NotPanics(t, func() { ZhihuUserDataIns = NewZhihuUserData() })
 

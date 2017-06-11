@@ -13,7 +13,7 @@ import (
 )
 
 func TestWeiboRelation(t *testing.T) {
-	db.GetInstance().OpenConnect()
+	db.GetDefaultInstance().OpenConnect()
 
 	assert.NotPanics(t, func() { WeiboRelationDataIns = NewWeiboRelationData() })
 

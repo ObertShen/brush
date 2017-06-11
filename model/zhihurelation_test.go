@@ -9,7 +9,7 @@ import (
 )
 
 func TestZhihuRelation(t *testing.T) {
-	db.GetInstance().OpenConnect()
+	db.GetZhihuInstance().OpenConnect()
 
 	assert.NotPanics(t, func() { ZhihuRelationDataIns = NewZhihuRelationData() })
 }

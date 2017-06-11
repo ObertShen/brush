@@ -7,10 +7,16 @@ import (
 	mysql "brush/core/db"
 )
 
-func main() {
+func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+}
 
-	dbcon := mysql.GetInstance()
+func main() {
+	weiboDB := mysql.GetDefaultInstance()
+	weiboDB.OpenConnect()
+	defer weiboDB.CloseConnect()
+
+	dbcon := mysql.GetZhihuInstance()
 	dbcon.OpenConnect()
 	defer dbcon.CloseConnect()
 

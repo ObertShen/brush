@@ -9,7 +9,7 @@ import (
 )
 
 func TestWeiboUser(t *testing.T) {
-	db.GetInstance().OpenConnect()
+	db.GetDefaultInstance().OpenConnect()
 
 	assert.NotPanics(t, func() { WeiboUserDataIns = NewWeiboUserData() })
 
