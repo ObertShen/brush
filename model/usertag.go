@@ -1,8 +1,9 @@
 package model
 
 import (
-	"fmt"
 	"strconv"
+
+	"brush/util/kafka"
 
 	"github.com/go-redis/redis"
 )
@@ -20,7 +21,7 @@ type (
 
 	// nameAndValue
 	nameAndValue struct {
-		Name  string `json:"name"`
+		Name  string `json:"key"`
 		Value int    `json:"value"`
 	}
 
@@ -43,7 +44,7 @@ func GetUserTagDataIns() *UserTagData {
 
 // NewUserTagData 创建 UserTagData 对象
 func NewUserTagData() *UserTagData {
-	utd := &UserTagData{GetConnIns()}
+	utd := &UserTagData{GetZhihuConnIns()}
 	utd.conn.Sync2(new(UserTag))
 	return utd
 }
@@ -65,9 +66,13 @@ func (uta *UserTagData) GetList(userTag *UserTag) (tags []*UserTag, err error) {
 
 // GetWeiboTags 获取微博tag
 func (uta *UserTagData) GetWeiboTags(weiboUserID int64, nickName string) (val string, err error) {
-	fmt.Println("weibo-" + strconv.FormatInt(weiboUserID, 10) + "-" + nickName)
-	val, err = uta.redis.Get("weibo-" + strconv.FormatInt(weiboUserID, 10) + nickName).Result()
+	taskKey := "weibo-" + strconv.FormatInt(weiboUserID, 10) + "-" + nickName
+	val, err = uta.redis.Get(taskKey).Result()
 	if err == redis.Nil {
+		if err = kafka.GetProducer().SendMessage("bigdata", taskKey); err != nil {
+			return
+		}
+
 		return "", nil
 	}
 
@@ -76,9 +81,13 @@ func (uta *UserTagData) GetWeiboTags(weiboUserID int64, nickName string) (val st
 
 // GetZhihuTags 获取zhihutag
 func (uta *UserTagData) GetZhihuTags(zhihuID int64, nickName string) (val string, err error) {
-	fmt.Println("zhihu-" + strconv.FormatInt(zhihuID, 10) + nickName)
+	taskKey := "zhihu-" + strconv.FormatInt(zhihuID, 10) + "-" + nickName
 	val, err = uta.redis.Get("zhihu-" + strconv.FormatInt(zhihuID, 10) + "-" + nickName).Result()
 	if err == redis.Nil {
+		if err = kafka.GetProducer().SendMessage("", taskKey); err != nil {
+			return
+		}
+
 		return "", nil
 	}
 

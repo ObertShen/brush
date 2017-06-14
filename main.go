@@ -5,10 +5,13 @@ import (
 
 	brush "brush/controller"
 	mysql "brush/core/db"
+	"brush/util/kafka"
 )
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
+
+	kafka.GetProducer()
 }
 
 func main() {

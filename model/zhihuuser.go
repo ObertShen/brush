@@ -8,7 +8,7 @@ type ZhihuUser struct {
 	NickName             string `xorm:"varchar(128) notnull 'nickname'" json:"nickname"`
 	AvatarURL            string `xorm:"varchar(512) notnull" json:"avatarURL"`
 	Gender               int    `xorm:"TinyInt(2) notnull" json:"gender"`
-	City                 string `xorm:"varchar(32) notnull" json:"city"`
+	City                 string `xorm:"varchar(32)" json:"city"`
 	HeadLine             string `xorm:"varchar(512) notnull" json:"headline"`
 	Industry             string `xorm:"varchar(32) notnull" json:"industry"`
 	Company              string `xorm:"varchar(128) notnull" json:"company"`

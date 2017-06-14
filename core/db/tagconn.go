@@ -3,6 +3,7 @@ package db
 import (
 	"log"
 	"sync"
+	"time"
 
 	"github.com/go-redis/redis"
 )
@@ -29,9 +30,10 @@ func GetRedisClientIns() *redis.Client {
 // NewClient 创建 redis 连接
 func NewClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "go.sna.com:6379",
-		Password: "lulu", // no password set
-		DB:       0,      // use default DB
+		Addr:        "go.sna.com:6379",
+		Password:    "lpxiang",
+		DB:          0, // use default DB
+		DialTimeout: (20 * time.Second),
 	})
 
 	pong, err := client.Ping().Result()
