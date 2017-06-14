@@ -1,5 +1,12 @@
 package model
 
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/go-redis/redis"
+)
+
 type (
 	// UserTag 对应user_tag表
 	UserTag struct {
@@ -51,6 +58,28 @@ func (uta *UserTagData) GetList(userTag *UserTag) (tags []*UserTag, err error) {
 	tags = []*UserTag{}
 	if err = uta.conn.Find(&tags, userTag); err != nil {
 		return
+	}
+
+	return
+}
+
+// GetWeiboTags 获取微博tag
+func (uta *UserTagData) GetWeiboTags(weiboUserID int64, nickName string) (val string, err error) {
+	fmt.Println("weibo-" + strconv.FormatInt(weiboUserID, 10) + "-" + nickName)
+	val, err = uta.redis.Get("weibo-" + strconv.FormatInt(weiboUserID, 10) + nickName).Result()
+	if err == redis.Nil {
+		return "", nil
+	}
+
+	return
+}
+
+// GetZhihuTags 获取zhihutag
+func (uta *UserTagData) GetZhihuTags(zhihuID int64, nickName string) (val string, err error) {
+	fmt.Println("zhihu-" + strconv.FormatInt(zhihuID, 10) + nickName)
+	val, err = uta.redis.Get("zhihu-" + strconv.FormatInt(zhihuID, 10) + "-" + nickName).Result()
+	if err == redis.Nil {
+		return "", nil
 	}
 
 	return

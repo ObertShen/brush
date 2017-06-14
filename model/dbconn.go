@@ -5,6 +5,7 @@ import (
 
 	"brush/core/db"
 
+	"github.com/go-redis/redis"
 	"github.com/go-xorm/xorm"
 )
 
@@ -17,13 +18,14 @@ var (
 
 // DBConn 其他数据操作类的父类
 type DBConn struct {
-	conn *xorm.Engine
+	conn  *xorm.Engine
+	redis *redis.Client
 }
 
 // GetZhihuConnIns 用于获取 DBConn 类的单例
 func GetZhihuConnIns() *DBConn {
 	if connIns == nil {
-		connIns = &DBConn{db.GetZhihuInstance().Conn}
+		connIns = &DBConn{db.GetZhihuInstance().Conn, db.GetRedisClientIns()}
 	}
 
 	return connIns
@@ -32,7 +34,7 @@ func GetZhihuConnIns() *DBConn {
 // GetConnIns 用于获取 DBConn 类的单例
 func GetConnIns() *DBConn {
 	if weiboConnIns == nil {
-		weiboConnIns = &DBConn{db.GetDefaultInstance().Conn}
+		weiboConnIns = &DBConn{db.GetDefaultInstance().Conn, db.GetRedisClientIns()}
 	}
 
 	return weiboConnIns

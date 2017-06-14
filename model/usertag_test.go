@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -37,4 +38,8 @@ func TestUserTag(t *testing.T) {
 	if assert.NoError(err) {
 		assert.True(len(userList) == 1)
 	}
+
+	tags, err := userTagDataIns.GetWeiboTags(10, "test")
+	assert.NoError(err)
+	fmt.Println(tags)
 }

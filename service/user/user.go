@@ -1,7 +1,6 @@
 package user
 
 import "brush/model"
-import "fmt"
 
 type (
 	dataAccess struct {
@@ -16,6 +15,8 @@ type (
 		dataAccess *dataAccess
 	}
 )
+
+const followerNumber = 5
 
 // NewService 创建Service对象
 func NewService() *Service {
@@ -132,12 +133,12 @@ func (us *Service) GetZhihuUserByFollower(zhihuID string) ([]*Node, []*Link, err
 
 	nodes = append(nodes, &Node{ID: zhihuUser.ID, ZhihuID: zhihuUser.UserName, Name: zhihuUser.NickName, Category: 0, Value: 10, Label: zhihuUser.NickName + "\n(主要)"})
 	for i, record := range records {
-		if i >= 10 {
+		if i >= followerNumber {
 			return nodes, links, nil
 		}
 
 		nodes = append(nodes, &Node{ID: record.ID, ZhihuID: record.UserName, Category: 1, Name: record.NickName, Value: 9})
-		links = append(links, &Link{Source: zhihuUser.NickName, Target: record.NickName, Weight: 9})
+		links = append(links, &Link{Source: zhihuUser.NickName, Target: record.NickName, Weight: 6})
 		nodes, links, err = us.getZhihuRelationCircle(nodes[0], nodes[i+1], nodes, links, 2)
 		if err != nil {
 			return nil, nil, err
@@ -169,11 +170,11 @@ func (us *Service) GetWeiboUserByFollower(weiboUserID int64) ([]*Node, []*Link, 
 
 	nodes = append(nodes, &Node{ID: weiboUser.ID, Name: weiboUser.NickName, Category: 0, Value: 10, Label: weiboUser.NickName + "\n(主要)"})
 	for i, record := range records {
-		if i >= 10 {
+		if i >= followerNumber {
 			return nodes, links, nil
 		}
 
-		nodes = append(nodes, &Node{ID: record.ID, Category: 1, Name: record.NickName, Value: 9})
+		nodes = append(nodes, &Node{ID: record.ID, Category: 1, Name: record.NickName, Value: 6})
 		links = append(links, &Link{Source: record.NickName, Target: weiboUser.NickName, Weight: 9})
 		nodes, links, err = us.getRelationCircle(nodes[0], nodes[i+1], nodes, links, 2)
 		if err != nil {
@@ -194,8 +195,7 @@ func (us *Service) getRelationCircle(mainNode *Node, sourceNode *Node, nodes []*
 
 OutLoop:
 	for i, record := range records {
-		fmt.Printf("Times: %d, Record %d \n", times, i)
-		if i >= 10 {
+		if i >= followerNumber {
 			return nodes, links, nil
 		}
 
@@ -211,9 +211,9 @@ OutLoop:
 			}
 		}
 
-		recordNode := &Node{ID: record.ID, Category: 1, Name: record.NickName, Value: (times + 1) * 3}
+		recordNode := &Node{ID: record.ID, Category: 1, Name: record.NickName, Value: times*3 + 1}
 		nodes = append(nodes, recordNode)
-		links = append(links, &Link{Source: record.NickName, Target: sourceNode.Name, Weight: (times + 1) * 3})
+		links = append(links, &Link{Source: record.NickName, Target: sourceNode.Name, Weight: times*3 + 1})
 
 		if times > 0 {
 			nodes, links, err = us.getRelationCircle(sourceNode, recordNode, nodes, links, times)
@@ -236,7 +236,7 @@ func (us *Service) getZhihuRelationCircle(mainNode *Node, sourceNode *Node, node
 
 OutLoop:
 	for i, record := range records {
-		if i >= 10 {
+		if i >= followerNumber {
 			return nodes, links, nil
 		}
 
@@ -252,12 +252,12 @@ OutLoop:
 			}
 		}
 
-		recordNode := &Node{ID: record.ID, Category: 1, Name: record.NickName, Value: (times + 1) * 3}
+		recordNode := &Node{ID: record.ID, Category: 1, Name: record.NickName, Value: times*3 + 1}
 		nodes = append(nodes, recordNode)
-		links = append(links, &Link{Source: record.NickName, Target: sourceNode.Name, Weight: (times + 1) * 3})
+		links = append(links, &Link{Source: record.NickName, Target: sourceNode.Name, Weight: times*3 + 1})
 
 		if times >= 0 {
-			nodes, links, err = us.getRelationCircle(sourceNode, recordNode, nodes, links, times)
+			nodes, links, err = us.getZhihuRelationCircle(sourceNode, recordNode, nodes, links, times)
 			if err != nil {
 				return nil, nil, err
 			}

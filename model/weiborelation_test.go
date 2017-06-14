@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"testing"
@@ -21,17 +20,15 @@ func TestWeiboRelation(t *testing.T) {
 }
 
 func addWeiboRelation(record string) {
-	fmt.Println("========")
-	fmt.Println(record)
-
 	columns := strings.Split(record, "\t\t")
-	fmt.Println(columns[0])
-	fmt.Println(columns[1])
 
+	s := strings.Split(columns[1], "\n")
+	columns[1] = s[0]
 	userID, _ := strconv.ParseInt(columns[0], 10, 0)
 	followID, _ := strconv.ParseInt(columns[1], 10, 0)
 
-	fmt.Println(len(columns))
-	fmt.Println(userID)
-	fmt.Println(followID)
+	WeiboRelationDataIns.Insert(&WeiboRelation{
+		FollowID:   userID,
+		FollowerID: followID,
+	})
 }
