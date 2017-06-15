@@ -5,16 +5,14 @@ import (
 
 	brush "brush/controller"
 	mysql "brush/core/db"
-	"brush/util/kafka"
+	"brush/model"
+	// "brush/util/kafka"
 )
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	kafka.GetProducer()
-}
-
-func main() {
+	// kafka.GetProducer()
 	weiboDB := mysql.GetDefaultInstance()
 	weiboDB.OpenConnect()
 	defer weiboDB.CloseConnect()
@@ -23,5 +21,9 @@ func main() {
 	dbcon.OpenConnect()
 	defer dbcon.CloseConnect()
 
+	model.InitDB()
+}
+
+func main() {
 	brush.Mount().Run(":3000")
 }

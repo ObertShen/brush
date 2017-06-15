@@ -22,6 +22,21 @@ type DBConn struct {
 	redis *redis.Client
 }
 
+// InitDB 初始化数据库
+func InitDB() {
+	GetZhihuConnIns()
+	GetConnIns()
+
+	GetCrawlerDataIns()
+	GetUserDataIns()
+	GetUserTagDataIns()
+	GetWeiboDataIns()
+	GetWeiboRelationDataIns()
+	GetWeiboUserDataIns()
+	GetZhihuRelationDataIns()
+	GetZhihuUserDataIns()
+}
+
 // GetZhihuConnIns 用于获取 DBConn 类的单例
 func GetZhihuConnIns() *DBConn {
 	if connIns == nil {
