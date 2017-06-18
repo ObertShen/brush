@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"net/http"
 
 	"brush/model"
@@ -21,7 +22,9 @@ func loginEndPoint(ctx *gin.Context) {
 	}
 
 	userData := &model.User{Name: loginInfo.UserName}
+	fmt.Println("=======Errr", loginInfo.UserName)
 	has, err := model.GetUserDataIns().Get(userData)
+	fmt.Println("=======Log", err)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"code": 5000, "error": err})
 		return
